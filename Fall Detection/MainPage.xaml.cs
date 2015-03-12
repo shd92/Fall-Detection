@@ -28,6 +28,7 @@ namespace Fall_Detection
         {
         }
 
+				//Variables for use of detection of fall
         private CppAcc myAcc;
         double AccMag;
         double FallThreshold = 0.2;
@@ -46,11 +47,12 @@ namespace Fall_Detection
         
         DispatcherTimer timer;
 
-
-        //FOR DETECTION OF FALL
+        //Variables for use AFTER detection of fall
         SoundIO sio;
         AudioTool at;
         float[] alarm;
+        AreYouOk askOk;
+        Popup prompt;
 
 
         private Object lockKey = new Object();
@@ -61,11 +63,20 @@ namespace Fall_Detection
         {
             this.InitializeComponent();
 
+						//For use of detection of fall
             this.NavigationCacheMode = NavigationCacheMode.Required;
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(100);
+            
+            //For use AFTER detection of fall
             sio = new SoundIO();
             at = new AudioTool(sio.getOutputNumChannels(), sio.getOutputSampleRate());
+            askOk = new AreYouOk();
+            prompt = new Popup();
+            prompt.Height = 300;
+            prompt.Width = 400;
+            prompt.VerticalOffset = 100;
+            prompt.Child = askOk;
         }
 
       
@@ -77,15 +88,43 @@ namespace Fall_Detection
             {
                 alarm = at.sin(numSamples, 2000);
                 alarm = at.convertChannels(alarm, 1);
-
-               return alarm;
+                return alarm;
             };
+            
+            askOk.Cancel.Click += (s, ergs) =>
+            {
+                prompt.IsOpen = false;
+	              sio.stop();
+            };
+            
+             askOk.Help.Click += (s, ergs) =>
+             {
+                prompt.IsOpen = false;
+                sio.stop();
+
+                //Send alarm text to contact list
+             };
 
         }
 
         //Start or reset Accelerometer 
         public void startStopButton_Click(object sender, RoutedEventArgs e)
         {
+        	
+        	      //SOUND ALARM
+                
+
+                //VIBRATE
+
+                //PROMPT USER IF OKAY
+                
+
+
+                
+
+               
+        	
+        	
             if (startStopButton.Content.Equals("Start"))
             {
                 startStopButton.Content = "Stop";
@@ -114,41 +153,11 @@ namespace Fall_Detection
                              //Check to see if Fall was detected
                              if (AccMag <= FallThreshold)
                              {
-                                 //SOUND ALARM
-                                 sio.start();
-
-                                 //VIBRATE
-
-                                 //PROMPT USER IF OKAY
-                                 myAcc.Dispose();
-                                 fallDetected = true;
                                  FallIndication.Text = "FALL DETECTED!";
-                                 Popup prompt = new Popup();
-                                 prompt.Height = 300;
-                                 prompt.Width = 400;
-                                 prompt.VerticalOffset = 100;
-                                 AreYouOk askOk = new AreYouOk();
-                                 prompt.Child = askOk;
-                                 prompt.IsOpen = true;
-
-
-                                 //askOk.Cancel.Click += (s, ergs) =>
-                                 //{
-                                 //    prompt.IsOpen = false;
-                                 //    //sio.stop();
-
-
-                                 //};
-
-                                 //askOk.Help.Click += (s, ergs) =>
-                                 //{
-                                 //    prompt.IsOpen = false;
-
-                                 //    //sio.stop();
-
-                                 //    //Send alarm text to contact list
-                                 //};
-
+                                 sio.start(); //Alarm with sound
+                                 //Alarm with vibrate
+                                 prompt.IsOpen = true; //prompt user if okay
+                                 myAcc.Dispose();
                              }
                          });
                      }
@@ -169,13 +178,6 @@ namespace Fall_Detection
         //When fall detected, prompt user if OK while making sound and vibrate
         private void FallStatus_Change(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-                //MAKE SOUND
-               // sio.start();
-                
-
-
-                //VIBRATE
-
 
         }
 
