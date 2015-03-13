@@ -6,6 +6,7 @@ using namespace Windows::Foundation;
 namespace CppSensors
 {
 	public delegate void AccelerometerEvent(double x, double y, double z);
+	//public delegate void AccReachThreshEvent();
 	public delegate void GyroscopeEvent(double x, double y, double z);
 	public delegate void CompassEvent(double n);
 

@@ -6,14 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
+    d:DesignHeight="200"
     d:DesignWidth="400">
 
     <Grid>
-        <StackPanel x:Name="LayoutRoot"  Width="480" Height="480" Background="#FFF95F26">
+        <StackPanel x:Name="LayoutRoot"  Width="480" Height="350" Background="#FFF95F26">
             <TextBox Margin="0,0,80,0" TextWrapping="Wrap" Text="ARE YOU &#xA;OKAY?" VerticalAlignment="Top" Height="138" FontSize="48" TextAlignment="Center" FontWeight="Bold" Background="#FFFBCFAA" Foreground="#FFB60F0F" HorizontalAlignment="Center" Width="400"/>
-            <Button x:Name="Cancel" Content="Yes, I am okay" HorizontalAlignment="Center" Margin="72,0,153,0" Width="255" Height="84" FontSize="22" FontWeight="Bold" FontFamily="Global User Interface" BorderThickness="4"/>
-            <Button x:Name="Help" Content="No, I am NOT okay" HorizontalAlignment="Center" Margin="72,0,153,0" Width="255" VerticalAlignment="Top" Height="83" FontWeight="Bold" FontSize="22" FontFamily="Adobe Caslon Pro Bold" BorderThickness="4"/>
+            <Button x:Name="Cancel" Content="Yes, I am okay" HorizontalAlignment="Center" Margin="72,0,153,0" Width="255" Height="84" FontSize="22" FontWeight="Bold" FontFamily="Global User Interface" BorderThickness="4" Click="Cancel_Click"/>
+            <Button x:Name="Help" Content="No, I am NOT okay" HorizontalAlignment="Center" Margin="72,0,153,0" Width="255" VerticalAlignment="Top" Height="83" FontWeight="Bold" FontSize="22" FontFamily="Adobe Caslon Pro Bold" BorderThickness="4" Click="Help_Click"/>
         </StackPanel>
     </Grid>
 </UserControl>

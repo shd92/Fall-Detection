@@ -16,6 +16,10 @@ using CppSensors;
 using Windows.UI.Core;
 using System.Numerics;
 using libsound;
+using Windows.Phone.Devices.Notification;
+using VibrateAlarm;
+using SoundAlarm;
+using Windows.Storage;
 
 
 namespace FallDetection
@@ -44,11 +48,10 @@ namespace FallDetection
         DispatcherTimer timer;
 
         //Variables for use AFTER detection of fall
-        SoundIO sio;
-        AudioTool at;
-        float[] alarm;
-        AreYouOk askOk;
-        Popup prompt;
+        Sound sound; //Initiate Sound Alarm
+        Vibrator vibrate; //Initiate Vibrate Alarm
+        AreYouOk askOk; //Initiates .xaml to be popped up
+        Popup prompt; //Initiates a pop up prompt
 
 
         private Object lockKey = new Object();
@@ -56,7 +59,9 @@ namespace FallDetection
 
         public MainPage()
         {
-            this.InitializeComponent();
+            this.InitializeComponent() ;
+
+            this.NavigationCacheMode = NavigationCacheMode.Required;
 
             //For use of detection of fall
             this.NavigationCacheMode = NavigationCacheMode.Required;
@@ -64,11 +69,11 @@ namespace FallDetection
             timer.Interval = TimeSpan.FromMilliseconds(100);
 
             //For use AFTER detection of fall
-            sio = new SoundIO();
-            at = new AudioTool(sio.getOutputNumChannels(), sio.getOutputSampleRate());
+            sound = new Sound();
+            vibrate = new Vibrator();
             askOk = new AreYouOk();
             prompt = new Popup();
-            prompt.Height = 300;
+            prompt.Height = 200;
             prompt.Width = 400;
             prompt.VerticalOffset = 100;
             prompt.Child = askOk;
@@ -78,27 +83,22 @@ namespace FallDetection
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
 
-            //Used to Alarm
-            sio.audioOutEvent += (uint numSamples) =>
+            askOk.ClickedCancel += (s, ergs) =>
             {
-                alarm = at.sin(numSamples, 2000);
-                alarm = at.convertChannels(alarm, 1);
-                return alarm;
+                prompt.IsOpen = false;
+                sound.stop();
+                vibrate.stop();
             };
 
-            //askOk.Cancel.Click += (s, ergs) =>
-            //{
-            //    prompt.IsOpen = false;
-            //    sio.stop();
-            //};
+            askOk.ClickedHelp += (s, ergs) =>
+            {
+                prompt.IsOpen = false;
+                sound.stop();
+                vibrate.stop();
 
-            //askOk.Help.Click += (s, ergs) =>
-            //{
-            //    prompt.IsOpen = false;
-            //    sio.stop();
-
-            //    //Send alarm text to contact list
-            //};
+                //Send alarm text to contact list
+                ComposeSms();
+            };
 
         }
 
@@ -135,8 +135,8 @@ namespace FallDetection
                             if (AccMag <= FallThreshold)
                             {
                                 FallIndication.Text = "FALL DETECTED!";
-                                sio.start(); //Alarm with sound
-                                //Alarm with vibrate
+                                sound.start(); //Alarm with sound
+                                vibrate.start(); //Alarm with Vibration
                                 prompt.IsOpen = true; //prompt user if okay
                                 myAcc.Dispose();
                             }
@@ -156,46 +156,37 @@ namespace FallDetection
             }
         }
 
-        //When fall detected, prompt user if OK while making sound and vibrate
-        private void FallStatus_Change(FrameworkElement sender, DataContextChangedEventArgs args)
+        private async void ComposeSms()
+        {
+            Windows.ApplicationModel.Chat.ChatMessage msg = new Windows.ApplicationModel.Chat.ChatMessage();
+            msg.Body = "This is body of demo message.";
+            msg.Recipients.Add("3605090277");
+            msg.Recipients.Add("3605090396");
+            await Windows.ApplicationModel.Chat.ChatMessageManager.ShowComposeSmsMessageAsync(msg);
+        }
+
+        private void TextBlock_SelectionChanged(object sender, RoutedEventArgs e)
         {
 
         }
 
+        private void TextBlock_SelectionChanged_1(object sender, RoutedEventArgs e)
+        {
+            EMJ
+        }
 
-        //ADD PHONE NUMBERS
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    Popup popup = new Popup();
-        //    popup.Height = 300;
-        //    popup.Width = 400;
-        //    popup.VerticalOffset = 100;
-        //    AddContact control = new AddContact();
-        //    popup.Child = control;
-        //    popup.IsOpen = true;
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
 
-
-        //    control.btnOK.Click += (s, args) =>
-        //    {
-        //        popup.IsOpen = false;
-        //        this.text.Text = control.tbx.Text;
-        //    };
-
-        //    control.btnCancel.Click += (s, args) =>
-        //    {
-        //        popup.IsOpen = false;
-        //    };
-        //}
-
-
+        }
 
 
     }
 }
 
 
-
-
+//How to send text/email/call
+//http://stackoverflow.com/questions/23797559/wp-8-1-runtime-code-to-make-phone-call-send-sms-send-email-not-the-silverlig
 
 
 
