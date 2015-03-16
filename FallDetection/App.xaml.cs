@@ -35,6 +35,9 @@ namespace FallDetection
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+
+
+
         }
 
         /// <summary>

@@ -6,6 +6,45 @@
 using namespace CppSensors;
 using namespace Platform;
 
+
+//ACCELEROMTER & GYROSCOPE
+CppAccGyro::CppAccGyro()
+{
+	this->acc = Accelerometer::GetDefault();
+	this->acc->ReportInterval = 10;
+	this->acc->ReadingChanged += ref new TypedEventHandler < Accelerometer ^, AccelerometerReadingChangedEventArgs ^>(this, &CppAccGyro::accChanged);
+	this->gyro = Gyrometer::GetDefault();
+	this->gyro->ReportInterval = 10;
+	this->gyro->ReadingChanged += ref new TypedEventHandler<Gyrometer ^, GyrometerReadingChangedEventArgs ^>(this, &CppAccGyro::gyroChanged);
+	AccX = 50; 
+	AccY = 50;
+	AccZ = 50;
+	GyrX = 0;
+	GyrY = 0;
+	GyrZ = 0;
+}
+
+void CppAccGyro::accChanged(Accelerometer ^sender, AccelerometerReadingChangedEventArgs ^args)
+{
+	AccX = args->Reading->AccelerationX;
+	AccY = args->Reading->AccelerationY;
+	AccZ = args->Reading->AccelerationZ;
+	this->onReadingChanged(AccX, AccY, AccZ, GyrX, GyrY, GyrZ);
+}
+
+void CppAccGyro::gyroChanged(Gyrometer ^sender, GyrometerReadingChangedEventArgs ^args)
+{
+	GyrX = args->Reading->AngularVelocityX;
+	GyrY = args->Reading->AngularVelocityX;
+	GyrZ = args->Reading->AngularVelocityZ;
+	this->onReadingChanged(AccX, AccY, AccZ, GyrX, GyrY, GyrZ);
+}
+
+CppAccGyro::~CppAccGyro()
+{
+
+}
+
 //ACCELEROMETER
 CppAcc::CppAcc()
 {
@@ -42,29 +81,3 @@ CppGyro::~CppGyro()
 
 }
 
-//COMPASS 
-CppCompass::CppCompass()
-{
-	this->compass = Compass::GetDefault();
-	this->compass->ReportInterval = 10;
-	this->compass->ReadingChanged += ref new TypedEventHandler <Compass ^, CompassReadingChangedEventArgs ^>(this, &CppCompass::compassChanged);
-	n = 0;
-}
-
-void CppCompass::compassChanged(Compass ^sender, CompassReadingChangedEventArgs ^args)
-{
-	double nNew = args->Reading->HeadingMagneticNorth;
-
-	//compassChanged() is just redirecting the function call from the Compass object to our C# class
-	this->onReadingChanged(nNew);
-}
-
-double CppCompass::getN()
-{
-	return n;
-}
-
-CppCompass::~CppCompass()
-{
-
-}
